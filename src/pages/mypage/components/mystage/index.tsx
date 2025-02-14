@@ -1,16 +1,11 @@
 import styled from "styled-components";
 import NoScrappedSVG from "@assets/images/noscrappedd.svg?react";
-import BookmarkSVG from "@assets/icons/bookmark.svg?react";
-import BookmarkFilledSVG from "@assets/icons/bookmark_filled.svg?react";
+import BookmarkSVG from "@assets/icons/bookmark.svg";
+import BookmarkFilledSVG from "@assets/icons/bookmark_filled.svg";
 import Button from "@/components/buttons/button";
-import { useEffect, useState } from "react";
-import { requestCastsStatus, requestScraps } from "@/api/users";
-import {
-  requestCasts,
-  requestDeleteScrapCast,
-  requestScrapCast,
-} from "@/api/cast";
 import Cast from "@/pages/home/components/cast";
+import { useMystageData } from "../../hooks/useMystageData";
+import { useNavigate } from "react-router-dom";
 
 export interface RecruitsStatus {
   accepted: number;
@@ -19,69 +14,11 @@ export interface RecruitsStatus {
   rejected: number;
 }
 
-export interface Scrap {
-  castId: string;
-  castTitle: string;
-  imageUrl: string;
-  troupeId: number;
-  troupeName: string;
-  isBookmarked: boolean;
-  artworkName: string;
-  practiceAddress: string;
-}
-
 const Mystage = () => {
-  const [recruitsStatus, setRecruitsStatus] = useState<RecruitsStatus>();
-  const [popularRecruits, setPopularRecruits] = useState([]);
-  const [scraps, setScraps] = useState<Scrap[]>([]);
+  const { recruitsStatus, popularRecruits, scraps, handleBookmarkClick } =
+    useMystageData();
 
-  const getRecruitsStatus = async () => {
-    const res = await requestCastsStatus();
-    setRecruitsStatus(res);
-  };
-
-  const getPopularRecruits = async () => {
-    const { casts } = await requestCasts({
-      limit: "4",
-      offset: "0",
-      orderBy: "newest",
-    });
-
-    setPopularRecruits(casts);
-  };
-
-  const getScrappedCasts = async () => {
-    const { casts } = await requestScraps({
-      limit: 3,
-      offset: 0,
-    });
-    const updatedScraps = casts.map((scrap: Scrap) => ({
-      ...scrap,
-      isBookmarked: true,
-    }));
-    setScraps(updatedScraps);
-  };
-
-  const handleBookmarkClick = async (id: string) => {
-    const prev = scraps.find((cast) => cast.castId == id)?.isBookmarked;
-
-    const updatedScraps = scraps.map((cast) =>
-      cast.castId === id ? { ...cast, isBookmarked: !prev } : cast
-    );
-    setScraps(updatedScraps);
-
-    if (prev) {
-      await requestDeleteScrapCast(id);
-    } else {
-      await requestScrapCast(id);
-    }
-  };
-
-  useEffect(() => {
-    getRecruitsStatus();
-    getPopularRecruits();
-    getScrappedCasts();
-  }, []);
+  const navigate = useNavigate();
 
   return (
     <MystageContainer>
@@ -122,7 +59,12 @@ const Mystage = () => {
               <Text>아직 스크랩한 공고가 없어요.</Text>
               <SubText>관심있는 공고를 스크랩 해보세요!</SubText>
             </TextWrapper>
-            <Button variation="solid" btnClass="primary" width={296}>
+            <Button
+              variation="solid"
+              btnClass="primary"
+              width={296}
+              onClick={() => navigate("/casts")}
+            >
               공고 찾아보기
             </Button>
           </NoSavedPost>
@@ -133,26 +75,29 @@ const Mystage = () => {
                 castId,
                 imageUrl,
                 castTitle,
-                artworkName,
+                troupeName,
                 practiceAddress,
                 isBookmarked,
+                dday,
               }) => {
-                console.log(castId, "의 북마크는", isBookmarked);
                 return (
                   <CastWrapper key={castId}>
                     <Cast
-                      recruitId={Number(castId)}
+                      recruitId={castId}
                       thumbnail={imageUrl}
                       recruitTitle={castTitle}
-                      artworkName={artworkName}
+                      troupeName={troupeName}
                       practiceLocation={practiceAddress}
                     />
-                    <DdayTag>D-1</DdayTag>
+                    <DdayTag>D-{dday}</DdayTag>
                     <BookmarkWrapper
                       key={`bookmark-${castId}`}
                       onClick={() => handleBookmarkClick(castId)}
                     >
-                      {isBookmarked ? <BookmarkFilledSVG /> : <></>}
+                      <img
+                        src={isBookmarked ? BookmarkFilledSVG : BookmarkSVG}
+                        alt="Bookmark"
+                      />
                     </BookmarkWrapper>
                   </CastWrapper>
                 );
@@ -173,7 +118,7 @@ const Mystage = () => {
                 recruitId,
                 thumbnail,
                 recruitTitle,
-                artworkName,
+                troupeName,
                 practiceLocation,
               }) => (
                 <Cast
@@ -181,7 +126,7 @@ const Mystage = () => {
                   recruitId={recruitId}
                   thumbnail={thumbnail}
                   recruitTitle={recruitTitle}
-                  artworkName={artworkName}
+                  troupeName={troupeName}
                   practiceLocation={practiceLocation}
                 />
               )

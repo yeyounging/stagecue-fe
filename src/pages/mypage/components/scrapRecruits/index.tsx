@@ -1,34 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import RadioSVG from "@assets/icons/radio.svg?react";
 import RadioCheckedSVG from "@assets/icons/radio_checked.svg?react";
 import DotdotdotSVG from "@/assets/images/dotdotdot.svg?react";
 import Button from "@/components/buttons/button";
-import { requestScraps } from "@/api/users";
 import Cast from "@/pages/home/components/cast";
+import { useNavigate } from "react-router-dom";
+import { useMystageData } from "../../hooks/useMystageData";
 
 const ScrapRecruits = () => {
+  const navigate = useNavigate();
+  const { scraps } = useMystageData();
+
   const [isFilteredClosedPost, setIsFilteredClosedPost] = useState(false);
-  const [scraps, setScraps] = useState([]);
 
   const handleFilterClick = () => {
     setIsFilteredClosedPost((curr) => !curr);
   };
-
-  const getScrappedCasts = async () => {
-    const { casts } = await requestScraps({
-      limit: 3,
-      offset: 0,
-    });
-
-    setScraps(casts);
-  };
-
-  console.log(scraps)
-
-  useEffect(() => {
-    getScrappedCasts();
-  }, []);
 
   return (
     <ScrapContainer>
@@ -46,29 +34,26 @@ const ScrapRecruits = () => {
           <TextWrapper>
             <Text>아직 스크랩한 공고가 없어요.</Text>
           </TextWrapper>
-          <Button variation="solid" btnClass="primary" width={296}>
+          <Button
+            variation="solid"
+            btnClass="primary"
+            width={296}
+            onClick={() => navigate("/casts")}
+          >
             공고 찾아보기
           </Button>
         </NoScrap>
       ) : (
         <ScrapList>
           {scraps?.map(
-            ({
-              castId,
-              imageUrl,
-              castTitle,
-              artworkName,
-              practiceAddress,
-              isScrapping,
-            }) => (
+            ({ castId, imageUrl, castTitle, troupeName, practiceAddress }) => (
               <Cast
                 key={castId}
                 recruitId={castId}
                 thumbnail={imageUrl}
                 recruitTitle={castTitle}
-                artworkName={artworkName}
+                troupeName={troupeName}
                 practiceLocation={practiceAddress}
-                isScrapping={isScrapping}
               />
             )
           )}
