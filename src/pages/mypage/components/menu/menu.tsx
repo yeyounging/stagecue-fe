@@ -85,7 +85,6 @@ const Options = styled.div`
 `;
 
 const Option = styled.div<{ $isSelected: boolean }>`
-  width: fit-content;
   padding: 4px 6px;
   cursor: pointer;
   font-size: 15px;

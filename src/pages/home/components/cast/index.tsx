@@ -7,7 +7,6 @@ interface RecruitProps {
   recruitTitle: string;
   artworkName: string;
   practiceLocation: string;
-  isScrapping: boolean;
   thumbnail: string;
 }
 
@@ -16,7 +15,6 @@ const Recruit = ({
   recruitTitle,
   artworkName,
   practiceLocation,
-  // isScrapping,
   thumbnail,
 }: RecruitProps) => {
   const navigate = useNavigate();
