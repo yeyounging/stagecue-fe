@@ -19,7 +19,7 @@ const ApplyList = ({ status, filter }: ApplyListProps) => {
     const res = await requestAppliedCasts({
       limit: 10,
       offset: 0,
-      status: filter === "전체" ? "" : filter,
+      status,
     });
 
     const { applies } = res;
