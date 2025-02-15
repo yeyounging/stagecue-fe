@@ -6,6 +6,7 @@ import Button from "@/components/buttons/button";
 import Cast from "@/pages/home/components/cast";
 import { useMystageData } from "../../hooks/useMystageData";
 import { useNavigate } from "react-router-dom";
+import { Recruit } from "../../types/data";
 
 export interface RecruitsStatus {
   accepted: number;
@@ -118,15 +119,15 @@ const Mystage = () => {
                 recruitId,
                 thumbnail,
                 recruitTitle,
-                troupeName,
+                artworkName,
                 practiceLocation,
-              }) => (
+              }: Recruit) => (
                 <Cast
                   key={recruitId}
                   recruitId={recruitId}
                   thumbnail={thumbnail}
                   recruitTitle={recruitTitle}
-                  troupeName={troupeName}
+                  troupeName={artworkName}
                   practiceLocation={practiceLocation}
                 />
               )

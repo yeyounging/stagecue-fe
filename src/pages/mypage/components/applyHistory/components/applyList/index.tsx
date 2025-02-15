@@ -27,7 +27,6 @@ const ApplyList = ({ status, filter }: ApplyListProps) => {
     });
 
     const { applies } = res;
-
     setCasts(applies);
   };
 
