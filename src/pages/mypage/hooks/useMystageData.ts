@@ -6,26 +6,7 @@ import {
   requestScrapCast,
 } from "@/api/cast";
 import dayjs from "dayjs";
-
-export interface Scrap {
-  castId: string;
-  castTitle: string;
-  imageUrl: string;
-  troupeId: number;
-  troupeName: string;
-  isBookmarked: boolean;
-  practiceAddress: string;
-  dateExpired: string;
-  dday: number;
-}
-
-export interface Recruit {
-  recruitId: string;
-  thumbnail: string;
-  recruitTitle: string;
-  troupeName: string;
-  practiceLocation: string;
-}
+import { Scrap } from "../types/data";
 
 export const useMystageData = () => {
   const queryClient = useQueryClient();
@@ -36,7 +17,7 @@ export const useMystageData = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const { data: popularRecruits } = useQuery<Recruit[]>({
+  const { data: popularRecruits } = useQuery({
     queryKey: ["popularRecruits"],
     queryFn: () =>
       requestCasts({
@@ -45,6 +26,7 @@ export const useMystageData = () => {
         orderBy: "newest",
       }),
     staleTime: 1000 * 60 * 5,
+    select: (data) => data.recruit,
   });
 
   const { data: scraps = [] } = useQuery<Scrap[]>({
