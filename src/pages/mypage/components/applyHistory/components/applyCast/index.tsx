@@ -110,7 +110,6 @@ const ApplyCastContainer = styled.div`
   border: 1px solid #f4f4f5;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 16px;
   border-radius: 8px;
 `;

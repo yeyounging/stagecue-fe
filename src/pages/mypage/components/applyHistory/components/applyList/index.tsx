@@ -5,6 +5,7 @@ import { requestAppliedCasts, requestCancelApply } from "@/api/users";
 import Button from "@/components/buttons/button";
 import DotdotdotSVG from "@/assets/images/dotdotdot.svg?react";
 import ApplyCast from "../applyCast";
+import { useNavigate } from "react-router-dom";
 
 interface ApplyListProps {
   status: applyPhaseType;
@@ -12,6 +13,9 @@ interface ApplyListProps {
 }
 
 const ApplyList = ({ status, filter }: ApplyListProps) => {
+
+  const navigate = useNavigate();
+  
   const [casts, setCasts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -19,11 +23,10 @@ const ApplyList = ({ status, filter }: ApplyListProps) => {
     const res = await requestAppliedCasts({
       limit: 10,
       offset: 0,
-      status: filter === "전체" ? "" : filter,
+      status,
     });
 
     const { applies } = res;
-
     setCasts(applies);
   };
 
@@ -57,9 +60,9 @@ const ApplyList = ({ status, filter }: ApplyListProps) => {
             <Text>아직 지원한 공고가 없어요.</Text>
             <SubText>다양한 공고들을 둘러볼까요?</SubText>
           </TextWrapper>
-          <Button variation="solid" btnClass="primary" width={296}>
-            공고 찾아보기
-          </Button>
+            <Button variation="solid" btnClass="primary" width={296} onClick={() => navigate('/casts')}>
+              공고 찾아보기
+            </Button>
         </NoApplyHistory>
       ) : (
         casts.map(

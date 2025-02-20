@@ -95,6 +95,7 @@ const Detail = () => {
         <Header>
           <TitleWrapper>
             <DdayWrapper>
+              {/* TODO: 디데이 바인딩 */}
               <Dday>D-12</Dday>
               {isLoggined && (
                 <BookmarkWrapper onClick={handleBookmarkClick}>

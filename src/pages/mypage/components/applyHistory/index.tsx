@@ -12,7 +12,7 @@ export type applyPhaseType =
   | "REJECTED"
   | "CANCEL";
 
-export type filterType = "전체" | "APPLIED" | "CANCEL";
+export type filterType = "전체" | "APPLIED" | "CANCEL" | "READ";
 
 const ApplyHistory = () => {
   const [recruitsStatus, setRecruitsStatus] = useState<RecruitsStatus>();
@@ -77,14 +77,7 @@ const ApplyHistory = () => {
             $isSelected={selectedPhase === "APPLIED"}
           >
             <ItemName>지원 완료</ItemName>
-            {recruitsStatus && (
-              <Value>
-                {recruitsStatus?.applied +
-                  recruitsStatus?.passed +
-                  recruitsStatus?.accepted +
-                  recruitsStatus?.rejected}
-              </Value>
-            )}
+            {recruitsStatus && <Value>{recruitsStatus?.applied}</Value>}
           </ApplyPhase>
           <Divider />
           <ApplyPhase
@@ -125,7 +118,7 @@ const ApplyHistory = () => {
                   <Option onClick={() => handleFilterClick("전체")}>
                     전체
                   </Option>
-                  <Option onClick={() => handleFilterClick("APPLIED")}>
+                  <Option onClick={() => handleFilterClick("READ")}>
                     열람
                   </Option>
                   <Option onClick={() => handleFilterClick("APPLIED")}>

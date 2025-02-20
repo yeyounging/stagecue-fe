@@ -3,21 +3,19 @@ import LocationSVG from "@/assets/icons/location.svg?react";
 import { useNavigate } from "react-router-dom";
 
 interface RecruitProps {
-  recruitId: number;
+  recruitId: string;
   recruitTitle: string;
-  artworkName: string;
   practiceLocation: string;
-  isScrapping: boolean;
   thumbnail: string;
+  troupeName: string;
 }
 
 const Recruit = ({
   recruitId,
   recruitTitle,
-  artworkName,
   practiceLocation,
-  // isScrapping,
   thumbnail,
+  troupeName,
 }: RecruitProps) => {
   const navigate = useNavigate();
 
@@ -30,7 +28,7 @@ const Recruit = ({
       <Poster src={`https://s3.stagecue.co.kr/stagecue/${thumbnail}`} />
       <TextWrapper>
         <Title>{recruitTitle}</Title>
-        <Artwork>{artworkName}</Artwork>
+        <Artwork>{troupeName}</Artwork>
         <Location>
           <LocationSVG />
           {practiceLocation}
@@ -63,13 +61,17 @@ const TextWrapper = styled.div``;
 const Title = styled.div`
   width: 196px;
   min-height: 24px;
-  word-break: break-all;
-  text-overflow: ellipsis;
   color: #171719;
   font-weight: var(--font-semibold);
   font-size: 16px;
   letter-spacing: 0.57%;
   line-height: 150%;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 const Artwork = styled.div`

@@ -1,10 +1,12 @@
 import styled from "styled-components";
 import NoScrappedSVG from "@assets/images/noscrappedd.svg?react";
+import BookmarkSVG from "@assets/icons/bookmark.svg";
+import BookmarkFilledSVG from "@assets/icons/bookmark_filled.svg";
 import Button from "@/components/buttons/button";
-import { useEffect, useState } from "react";
-import { requestCastsStatus, requestScraps } from "@/api/users";
-import { requestCasts } from "@/api/cast";
 import Cast from "@/pages/home/components/cast";
+import { useMystageData } from "../../hooks/useMystageData";
+import { useNavigate } from "react-router-dom";
+import { Recruit } from "../../types/data";
 
 export interface RecruitsStatus {
   accepted: number;
@@ -14,39 +16,10 @@ export interface RecruitsStatus {
 }
 
 const Mystage = () => {
-  const [recruitsStatus, setRecruitsStatus] = useState<RecruitsStatus>();
-  const [popularRecruits, setPopularRecruits] = useState([]);
-  const [scraps, setScraps] = useState([]);
+  const { recruitsStatus, popularRecruits, scraps, handleBookmarkClick } =
+    useMystageData();
 
-  const getRecruitsStatus = async () => {
-    const res = await requestCastsStatus();
-    setRecruitsStatus(res);
-  };
-
-  const getPopularRecruits = async () => {
-    const { casts } = await requestCasts({
-      limit: "4",
-      offset: "0",
-      orderBy: "newest",
-    });
-
-    setPopularRecruits(casts);
-  };
-
-  const getScrappedCasts = async () => {
-    const { casts } = await requestScraps({
-      limit: 3,
-      offset: 0,
-    });
-
-    setScraps(casts);
-  };
-
-  useEffect(() => {
-    getRecruitsStatus();
-    getPopularRecruits();
-    getScrappedCasts();
-  }, []);
+  const navigate = useNavigate();
 
   return (
     <MystageContainer>
@@ -57,14 +30,7 @@ const Mystage = () => {
         <Dashboard>
           <MyStageItem>
             <ItemName>지원 완료</ItemName>
-            {recruitsStatus && (
-              <Value>
-                {recruitsStatus?.applied +
-                  recruitsStatus?.passed +
-                  recruitsStatus?.accepted +
-                  recruitsStatus?.rejected}
-              </Value>
-            )}
+            {recruitsStatus && <Value>{recruitsStatus?.applied}</Value>}
           </MyStageItem>
           <Divider />
           <MyStageItem>
@@ -94,7 +60,12 @@ const Mystage = () => {
               <Text>아직 스크랩한 공고가 없어요.</Text>
               <SubText>관심있는 공고를 스크랩 해보세요!</SubText>
             </TextWrapper>
-            <Button variation="solid" btnClass="primary" width={296}>
+            <Button
+              variation="solid"
+              btnClass="primary"
+              width={296}
+              onClick={() => navigate("/casts")}
+            >
               공고 찾아보기
             </Button>
           </NoSavedPost>
@@ -105,20 +76,33 @@ const Mystage = () => {
                 castId,
                 imageUrl,
                 castTitle,
-                artworkName,
+                troupeName,
                 practiceAddress,
-                isScrapping,
-              }) => (
-                <Cast
-                  key={castId}
-                  recruitId={castId}
-                  thumbnail={imageUrl}
-                  recruitTitle={castTitle}
-                  artworkName={artworkName}
-                  practiceLocation={practiceAddress}
-                  isScrapping={isScrapping}
-                />
-              )
+                isBookmarked,
+                dday,
+              }) => {
+                return (
+                  <CastWrapper key={castId}>
+                    <Cast
+                      recruitId={castId}
+                      thumbnail={imageUrl}
+                      recruitTitle={castTitle}
+                      troupeName={troupeName}
+                      practiceLocation={practiceAddress}
+                    />
+                    <DdayTag>D-{dday}</DdayTag>
+                    <BookmarkWrapper
+                      key={`bookmark-${castId}`}
+                      onClick={() => handleBookmarkClick(castId)}
+                    >
+                      <img
+                        src={isBookmarked ? BookmarkFilledSVG : BookmarkSVG}
+                        alt="Bookmark"
+                      />
+                    </BookmarkWrapper>
+                  </CastWrapper>
+                );
+              }
             )}
           </Scraps>
         )}
@@ -137,16 +121,14 @@ const Mystage = () => {
                 recruitTitle,
                 artworkName,
                 practiceLocation,
-                isScrapping,
-              }) => (
+              }: Recruit) => (
                 <Cast
                   key={recruitId}
                   recruitId={recruitId}
                   thumbnail={thumbnail}
                   recruitTitle={recruitTitle}
-                  artworkName={artworkName}
+                  troupeName={artworkName}
                   practiceLocation={practiceLocation}
-                  isScrapping={isScrapping}
                 />
               )
             )}
@@ -277,4 +259,25 @@ const Casts = styled.div`
 const Scraps = styled.div`
   display: flex;
   gap: 20px;
+`;
+
+const CastWrapper = styled.div`
+  position: relative;
+`;
+const DdayTag = styled.div`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: #ff4242;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 15px;
+`;
+
+const BookmarkWrapper = styled.div`
+  cursor: pointer;
+  position: absolute;
+  top: 3px;
+  right: 3px;
 `;
